@@ -1,48 +1,51 @@
-<?php include ROOT . '/views/layouts/header_admin.php'; ?>
+<?php
+/**
+ * @var array<int, array<string, mixed>> $categoriesList A list of all category data (associative arrays), typically containing keys like 'id', 'name', 'sort_order', and 'status'.
+ */
+include ROOT . '/views/layouts/header_admin.php'; ?>
 
-<section>
-    <div class="container">
-        <div class="row">
+    <section>
+        <div class="container">
+            <div class="row">
 
-            <br/>
+                <br/>
 
-            <div class="breadcrumbs">
-                <ol class="breadcrumb">
-                    <li><a href="/admin">Админпанель</a></li>
-                    <li class="active">Управление категориями</li>
-                </ol>
-            </div>
+                <div class="breadcrumbs">
+                    <ol class="breadcrumb">
+                        <li><a href="/admin">Admin Panel</a></li>
+                        <li class="active">Manage Categories</li>
+                    </ol>
+                </div>
 
-            <a href="/admin/category/create" class="btn btn-default back"><i class="fa fa-plus"></i> Добавить категорию</a>
-            
-            <h4>Список категорий</h4>
+                <a href="/admin/category/create" class="btn btn-default back"><i class="fa fa-plus"></i> Add Category</a>
 
-            <br/>
+                <h4>Category List</h4>
 
-            <table class="table-bordered table-striped table">
-                <tr>
-                    <th>ID категории</th>
-                    <th>Название категории</th>
-                    <th>Порядковый номер</th>
-                    <th>Статус</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <?php foreach ($categoriesList as $category): ?>
+                <br/>
+
+                <table class="table-bordered table-striped table">
                     <tr>
-                        <td><?php echo $category['id']; ?></td>
-                        <td><?php echo $category['name']; ?></td>
-                        <td><?php echo $category['sort_order']; ?></td>
-                        <td><?php echo category::getCategoryText($category['status']); ?></td>
-                        <td><a href="/admin/category/update/<?php echo $category['id']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o"></i></a></td>
-                        <td><a href="/admin/category/delete/<?php echo $category['id']; ?>" title="Удалить"><i class="fa fa-times"></i></a></td>
+                        <th>Category ID</th>
+                        <th>Category Name</th>
+                        <th>Sort Order</th>
+                        <th>Status</th>
+                        <th></th>
+                        <th></th>
                     </tr>
-                <?php endforeach; ?>
-            </table>
-            
+                    <?php foreach ($categoriesList as $category): ?>
+                        <tr>
+                            <td><?php echo $category['id']; ?></td>
+                            <td><?php echo $category['name']; ?></td>
+                            <td><?php echo $category['sort_order']; ?></td>
+                            <td><?php echo category::getCategoryText($category['status']); ?></td>
+                            <td><a href="/admin/category/update/<?php echo $category['id']; ?>" title="Edit"><i class="fa fa-pencil-square-o"></i></a></td>
+                            <td><a href="/admin/category/delete/<?php echo $category['id']; ?>" title="Delete"><i class="fa fa-times"></i></a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 <?php include ROOT . '/views/layouts/footer_admin.php'; ?>
-

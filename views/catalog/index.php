@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="left-sidebar">
-                    <h2>Каталог</h2>
+                    <h2>Catalog</h2>
                     <div class="panel-group category-products">
                         <?php foreach ($categories as $categoryItem): ?>
                             <div class="panel panel-default">
@@ -25,7 +25,7 @@
 
             <div class="col-sm-9 padding-right">
                 <div class="features_items"><!--features_items-->
-                    <h2 class="title text-center">Последние товары</h2>
+                    <h2 class="title text-center">Latest Products</h2>
 
                     <?php foreach ($latestProducts as $product): ?>
 
@@ -50,7 +50,7 @@
                                                 <?php echo $product['tittle'];?>
                                             </a>
                                         </p>
-                                        <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>В корзину</a>
+                                        <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
                                     </div>
                                     <?php if ($product['is_new']): ?>
                                         <img src="/assets/img/home/new.png" class="new" alt="" />

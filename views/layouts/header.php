@@ -1,3 +1,19 @@
+<?php
+/**
+ * Header template for the simple-shop application.
+ *
+ * This file contains the standard HTML head section, includes CSS/JS assets,
+ * and renders the main site header with top contact info, logo, main navigation,
+ * and a simple cart/user menu.
+ *
+ * It also includes a breadcrumbs implementation using PHP and the
+ * data-vocabulary.org microformat (which is largely deprecated but functional
+ * for demonstration purposes).
+ *
+ * @var string $pageTitle The title of the current page, displayed in the <title> tag.
+ * @var string $pageDescription The meta description of the current page.
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,15 +72,15 @@
                     <div class="shop-menu pull-right">
                         <ul class="nav navbar-nav">
                             <li><a href="/cart">
-                                    <i class="fa fa-shopping-cart"></i> Корзина
+                                    <i class="fa fa-shopping-cart"></i> Cart
                                     (<span id="cart-count"><?php echo cart::countItems(); ?></span>)
                                 </a>
                             </li>
                             <?php if (user::isGuest()): ?>
-                            <li><a href="/user/login/"><i class="fa fa-lock"></i> Вход</a></li>
+                                <li><a href="/user/login/"><i class="fa fa-lock"></i> Sign In</a></li>
                             <?php else: ?>
-                            <li><a href="/cabinet/"><i class="fa fa-user"></i> Аккаунт</a></li>
-                            <li><a href="/user/logout/"><i class="fa fa-unlock"></i> Выход</a></li>
+                                <li><a href="/cabinet/"><i class="fa fa-user"></i> Account</a></li>
+                                <li><a href="/user/logout/"><i class="fa fa-unlock"></i> Sign Out</a></li>
                             <?php endif; ?>
                         </ul>
                     </div>
@@ -87,38 +103,39 @@
                     </div>
                     <div class="mainmenu pull-left">
                         <ul class="nav navbar-nav collapse navbar-collapse">
-                            <li><a href="/">Главная</a></li>
-                            <li class="dropdown"><a href="#">Магазин<i class="fa fa-angle-down"></i></a>
+                            <li><a href="/">Home</a></li>
+                            <li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
                                 <ul role="menu" class="sub-menu">
-                                    <li><a href="/catalog/">Каталог товаров</a></li>
-                                    <li><a href="/cart/">Корзина</a></li>
+                                    <li><a href="/catalog/">Product Catalog</a></li>
+                                    <li><a href="/cart/">Cart</a></li>
                                 </ul>
                             </li>
-                            <li><a href="/blog/">Блог</a></li>
-                            <li><a href="/about/">О магазине</a></li>
-                            <li><a href="/contacts/">Контакты</a></li>
+                            <li><a href="/blog/">Blog</a></li>
+                            <li><a href="/about/">About Store</a></li>
+                            <li><a href="/contacts/">Contacts</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div><!--/header-bottom-->
-<!--Реализация хлебных крошек в микроформате всё реализовано на лету-->
+    <!-- Implementation of breadcrumbs using microformat, fully realized on the fly -->
     <?php
     //$path = $_SERVER["PHP_SELF"];
     $path = $_SERVER['REQUEST_URI'];
     $parts = explode('/',$path);
-    $domenName = 'http://wezom.test';
+    $domenName = 'http://wezom.test'; // This should ideally be dynamically detected or configured
     //print_r($parts);
-    //Проверяем на каком уровне мы находимся
+    // Checking the current navigation level
     if (count($parts) < 2)
     {
         echo("<div itemscope itemtype=\"http://data-vocabulary.org/Breadcrumb\"><a href=\"\" itemprop=\"url\"><span itemprop=\"title\">$pageDescription</span></a></div>");
     }
-    //если мы находимся на вложеном подуровне то смотрим где + добавляем ссылки в путь, потому как микроформат требует полного пути то используем перменную имени домена
+    // If we are on a nested sub-level, determine the location + add links to the path,
+    // using the domain name variable since microformat requires the full path.
     else
     {
-        echo ("<div class='breadcrumb col-lg-offset-1' itemscope itemtype=\"http://data-vocabulary.org/Breadcrumb\"><a href=\"$domenName\" itemprop=\"url\"><span itemprop=\"title\">Главная</span></a> &raquo; ");
+        echo ("<div class='breadcrumb col-lg-offset-1' itemscope itemtype=\"http://data-vocabulary.org/Breadcrumb\"><a href=\"$domenName\" itemprop=\"url\"><span itemprop=\"title\">Home</span></a> &raquo; ");
         //print_r($parts);
         for ($i = 2; $i < count($parts); $i++)
         {

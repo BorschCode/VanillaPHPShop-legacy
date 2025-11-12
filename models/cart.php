@@ -1,36 +1,38 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Жорик
- * Date: 09.12.2017
- * Time: 22:49
+ * Cart Model (Utility Class).
+ *
+ * This class handles all shopping cart logic, including adding, removing, counting,
+ * and calculating the total price of products stored in the PHP session ('products').
  */
-
-class cart
+class Cart
 {
 
     /**
-     * Добавление товара в корзину (сессию)
-     * @param int $id
+     * Adds a product to the shopping cart (stored in session).
+     * If the product already exists, its quantity is incremented.
+     *
+     * @param int $id The ID of the product to add.
+     * @return int The new total count of items in the cart.
      */
     public static function addProduct($id)
     {
         $id = intval($id);
 
-        // Пустой массив для товаров в корзине
+        // Empty array for products in the cart
         $productsInCart = array();
 
-        // Если в корзине уже есть товары (они хранятся в сессии)
+        // Check if products already exist in the cart (stored in session)
         if (isset($_SESSION['products'])) {
-            // То заполним наш массив товарами
+            // Fill our array with existing products
             $productsInCart = $_SESSION['products'];
         }
 
-        // Если товар есть в корзине, но был добавлен еще раз, увеличим количество
+        // If the product exists in the cart but was added again, increment the quantity
         if (array_key_exists($id, $productsInCart)) {
             $productsInCart[$id] ++;
         } else {
-            // Добавляем нового товара в корзину
+            // Add a new product to the cart with quantity 1
             $productsInCart[$id] = 1;
         }
 
@@ -40,8 +42,9 @@ class cart
     }
 
     /**
-     * Подсчет количество товаров в корзине (в сессии)
-     * @return int
+     * Counts the total number of items in the cart (stored in session).
+     *
+     * @return int The total number of items in the cart. Returns 0 if the cart is empty.
      */
     public static function countItems()
     {
@@ -56,6 +59,11 @@ class cart
         }
     }
 
+    /**
+     * Retrieves the list of product IDs and their quantities from the session.
+     *
+     * @return array|false An associative array of product IDs and quantities (e.g., [id => quantity]) or false if the cart is empty.
+     */
     public static function getProducts()
     {
         if (isset($_SESSION['products'])) {
@@ -64,21 +72,36 @@ class cart
         return false;
     }
 
+    /**
+     * Calculates the total price of the products currently in the cart.
+     * Requires an array of full product details (including price).
+     *
+     * @param array $products An array of product details (from the database) that are currently in the cart.
+     * @return float The total price of all items in the cart.
+     */
     public static function getTotalPrice($products)
     {
         $productsInCart = self::getProducts();
 
-        $total = 0;
+        $total = 0.0;
 
         if ($productsInCart) {
             foreach ($products as $item) {
-                $total += $item['price'] * $productsInCart[$item['id']];
+                // Ensure the product exists in the cart session before calculating
+                if (array_key_exists($item['id'], $productsInCart)) {
+                    $total += $item['price'] * $productsInCart[$item['id']];
+                }
             }
         }
 
         return $total;
     }
 
+    /**
+     * Clears the entire shopping cart (removes the 'products' session variable).
+     *
+     * @return void
+     */
     public static function clear()
     {
         if (isset($_SESSION['products'])) {
@@ -86,32 +109,35 @@ class cart
         }
     }
 
+    /**
+     * Deletes one item instance (decrements quantity) or removes the product entirely from the cart.
+     *
+     * @param int $id The ID of the product to decrement/remove.
+     * @return int The new total count of items in the cart.
+     */
     public static function deleteItem($id)
     {
-        //intval — Возвращает целое значение переменной
         $id = intval($id);
-        // Если вызвали функцию удаления то товары уже есть в корзине иначе вызов этой функции возможен только вручную
-        // и он закрешит сайт поэтому делаем проверку
+        $productsInCart = false;
+
+        // Check if products are in the session
         if (isset($_SESSION['products'])) {
             $productsInCart = $_SESSION['products'];
+        } else {
+            return 0; // Cart is empty, nothing to delete
         }
-        else
-        {
-            return false;
-        }
-        // Проверяем есть ил удаляемый элемент в корзине и его количество
-        // если больше 1 то просто уменьшаем количество на еденицу
+
+        // Check if the removable element is in the cart and its quantity
+        // If greater than 1, just decrease the quantity by one
         if (array_key_exists($id, $productsInCart) && $productsInCart[$id] > 1) {
             $productsInCart[$id] --;
-        } else {
-            // В другом случае просто обнуляем количество товара
-            //$productsInCart[$id] = 0;
+        } elseif (array_key_exists($id, $productsInCart)) {
+            // Otherwise, if quantity is 1, remove the product entirely
             unset($productsInCart[$id]);
         }
-//обновляем глобальную переменную
+
+        // Update the global session variable
         $_SESSION['products'] = $productsInCart;
         return self::countItems();
     }
-
-
 }

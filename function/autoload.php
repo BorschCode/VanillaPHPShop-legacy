@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 09.12.2017
- * Time: 0:08
- */
-
 
 function __autoload($class_name)
 {

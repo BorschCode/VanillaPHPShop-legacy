@@ -23,7 +23,7 @@
                 <div class="login-form">
                     <form action="#" method="post" enctype="multipart/form-data">
 
-                        <p>Название товара</p>
+                        <p>Name товара</p>
                         <input type="text" name="tittle" placeholder="" value="<?php echo $product['tittle']; ?>">
 
                         <p>Артикул</p>

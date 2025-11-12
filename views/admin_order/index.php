@@ -42,7 +42,7 @@
                         <td><?php echo Order::getStatusText($order['status']); ?></td>    
                         <td><a href="/admin/order/view/<?php echo $order['id']; ?>" title="Смотреть"><i class="fa fa-eye"></i></a></td>
                         <td><a href="/admin/order/update/<?php echo $order['id']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o"></i></a></td>
-                        <td><a href="/admin/order/delete/<?php echo $order['id']; ?>" title="Удалить"><i class="fa fa-times"></i></a></td>
+                        <td><a href="/admin/order/delete/<?php echo $order['id']; ?>" title="Delete"><i class="fa fa-times"></i></a></td>
                     </tr>
                 <?php endforeach; ?>
             </table>

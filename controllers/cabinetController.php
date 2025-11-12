@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * user: Жорик
+ * user: George
  * Date: 09.12.2017
  * Time: 21:25
  */
@@ -11,14 +11,14 @@ class cabinetController
 
     public function actionIndex()
     {
-        // Получаем идентификатор пользователя из сессии
+        // Get user identifier from session
         $userId = user::checkLogged();
 
-        // Получаем информацию о пользователе из БД
+        // Get user information from DB
         $user = user::getUserById($userId);
 
-        $pageTitle = "Кабинет";
-        $pageDescription = "Кабинет пользователя";
+        $pageTitle = "Cabinet";
+        $pageDescription = "User Cabinet";
         require_once(ROOT . '/views/cabinet/index.php');
 
         return true;
@@ -26,10 +26,10 @@ class cabinetController
 
     public function actionEdit()
     {
-        // Получаем идентификатор пользователя из сессии
+        // Get user identifier from session
         $userId = user::checkLogged();
 
-        // Получаем информацию о пользователе из БД
+        // Get user information from DB
         $user = user::getUserById($userId);
 
         $name = $user['name'];
@@ -44,11 +44,11 @@ class cabinetController
             $errors = false;
 
             if (!user::checkName($name)) {
-                $errors[] = 'Имя не должно быть короче 2-х символов';
+                $errors[] = 'Name must be at least 2 characters long';
             }
 
             if (!user::checkPassword($password)) {
-                $errors[] = 'Пароль не должен быть короче 6-ти символов';
+                $errors[] = 'Password must be at least 6 characters long';
             }
 
             if ($errors == false) {
@@ -56,8 +56,8 @@ class cabinetController
             }
 
         }
-        $pageTitle = "Кабинет";
-        $pageDescription = "Кабинет пользователя режим редактирования";
+        $pageTitle = "Cabinet";
+        $pageDescription = "User Cabinet режим редактирования";
         require_once(ROOT . '/views/cabinet/edit.php');
 
         return true;

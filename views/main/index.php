@@ -7,7 +7,7 @@ include ROOT.'/views/layouts/header.php'?>
             <div class="row">
                 <div class="col-sm-3">
                     <div class="left-sidebar">
-                        <h2>Каталог</h2>
+                        <h2>Catalog</h2>
                         <div class="panel-group category-products">
                             <?php foreach ($categories as $category):?>
                                 <div class="panel panel-default">
@@ -26,7 +26,7 @@ include ROOT.'/views/layouts/header.php'?>
 
                 <div class="col-sm-9 padding-right">
                     <div class="features_items"><!--features_items-->
-                        <h2 class="title text-center">Последние товары</h2>
+                        <h2 class="title text-center">Latest Products</h2>
 
                         <?php foreach ($latestProducts as $product): ?>
 
@@ -51,7 +51,7 @@ include ROOT.'/views/layouts/header.php'?>
                                                     <?php echo $product['tittle'];?>
                                                 </a>
                                             </p>
-                                            <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>В корзину</a>
+                                            <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
                                         </div>
                                         <?php if ($product['is_new']): ?>
                                             <img src="/assets/img/home/new.png" class="new" alt="" />
@@ -67,7 +67,7 @@ include ROOT.'/views/layouts/header.php'?>
                     <!--
                     <div class="recommended_items">
 
-                        <h2 class="title text-center">Рекомендуемые товары</h2>
+                        <h2 class="title text-center">Recommended Products</h2>
 
                         <div class="cycle-slideshow"
                              data-cycle-fx=carousel
@@ -89,7 +89,7 @@ include ROOT.'/views/layouts/header.php'?>
                                                     <?php /*echo $product['tittle']; */?>
                                                 </a>
                                                 <br/><br/>
-                                                <a href="#" class="btn btn-default add-to-cart" data-id="<?php /*echo $sliderItem['id']; */?>"><i class="fa fa-shopping-cart"></i>В корзину</a>
+                                                <a href="#" class="btn btn-default add-to-cart" data-id="<?php /*echo $sliderItem['id']; */?>"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
                                             </div>
                                             <?php /*if ($sliderItem['is_new']): */?>
                                                 <img src="/assets/img/home/new.png" class="new" alt="" />

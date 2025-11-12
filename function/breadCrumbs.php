@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 10.12.2017
  * Time: 22:14
  */
@@ -15,12 +15,12 @@ class breadCrumbs
 	if (count($parts) < 2)
     {
         //echo("home");
-        //return "Главная страница";
-        echo "Главная страница";
+        //return "Home страница";
+        echo "Home страница";
     }
     else
     {
-        echo ("<a href=\"/\">Главная</a> &raquo; ");
+        echo ("<a href=\"/\">Home</a> &raquo; ");
         for ($i = 1; $i < count($parts); $i++)
         {
             if (!strstr($parts[$i],"."))

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 10.12.2017
  * Time: 1:48
  */
@@ -14,13 +14,13 @@ class adminOrderController extends adminBase
      */
     public function actionIndex()
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем список заказов
         $ordersList = order::getOrdersList();
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_order/index.php');
         return true;
     }
@@ -30,7 +30,7 @@ class adminOrderController extends adminBase
      */
     public function actionUpdate($id)
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем данные о конкретном заказе
@@ -53,7 +53,7 @@ class adminOrderController extends adminBase
             header("Location: /admin/order/view/$id");
         }
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_order/update.php');
         return true;
     }
@@ -63,7 +63,7 @@ class adminOrderController extends adminBase
      */
     public function actionView($id)
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем данные о конкретном заказе
@@ -80,17 +80,17 @@ class adminOrderController extends adminBase
         // Получаем список товаров в заказе
         $products = product::getProdustsByIds($productsIds);
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_order/view.php');
         return true;
     }
 
     /**
-     * Action для страницы "Удалить заказ"
+     * Action для страницы "Delete заказ"
      */
     public function actionDelete($id)
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Обработка формы
@@ -103,7 +103,7 @@ class adminOrderController extends adminBase
             header("Location: /admin/order");
         }
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_order/delete.php');
         return true;
     }

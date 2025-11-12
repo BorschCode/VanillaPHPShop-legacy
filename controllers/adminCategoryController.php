@@ -3,59 +3,59 @@
  * Created by PhpStorm.
  * Date: 10.12.2017
  * Time: 1:41
-* Контроллер AdminCategoryController
-* Управление категориями товаров в админпанели
-*/
+ * Controller: AdminCategoryController
+ * Manages product categories in the admin panel
+ */
 class adminCategoryController extends adminBase
 {
 
     /**
-     * Action для страницы "Управление категориями"
+     * Action for the "Manage Categories" page
      */
     public function actionIndex()
     {
-        // Проверка доступа
+        // Check admin access
         self::checkAdmin();
 
-        // Получаем список категорий
+        // Get a list of categories for the admin panel
         $categoriesList = category::getCategoriesListAdmin();
 
-        // Подключаем вид
+        // Include the view
         require_once(ROOT . '/views/admin_category/index.php');
         return true;
     }
 
     /**
-     * Action для страницы "Добавить категорию"
+     * Action for the "Add Category" page
      */
     public function actionCreate()
     {
-        // Проверка доступа
+        // Check admin access
         self::checkAdmin();
 
-        // Обработка формы
+        // Handle form submission
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Получаем данные из формы
+            // If the form was submitted
+            // Get data from the form
             $name = $_POST['name'];
             $sortOrder = $_POST['sort_order'];
             $status = $_POST['status'];
 
-            // Флаг ошибок в форме
+            // Flag for form errors
             $errors = false;
 
-            // При необходимости можно валидировать значения нужным образом
+            // Basic validation: check if the name is set and not empty
             if (!isset($name) || empty($name)) {
-                $errors[] = 'Заполните поля';
+                $errors[] = 'Fill in all required fields';
             }
 
 
             if ($errors == false) {
-                // Если ошибок нет
-                // Добавляем новую категорию
+                // If there are no errors
+                // Add the new category
                 category::createCategory($name, $sortOrder, $status);
 
-                // Перенаправляем пользователя на страницу управлениями категориями
+                // Redirect the user to the category management page
                 header("Location: /admin/category");
             }
         }
@@ -65,55 +65,57 @@ class adminCategoryController extends adminBase
     }
 
     /**
-     * Action для страницы "Редактировать категорию"
+     * Action for the "Edit Category" page
+     * @param int $id The ID of the category to edit
      */
     public function actionUpdate($id)
     {
-        // Проверка доступа
+        // Check admin access
         self::checkAdmin();
 
-        // Получаем данные о конкретной категории
+        // Get data for the specific category
         $category = category::getCategoryById($id);
 
-        // Обработка формы
+        // Handle form submission
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Получаем данные из формы
+            // If the form was submitted
+            // Get data from the form
             $name = $_POST['name'];
             $sortOrder = $_POST['sort_order'];
             $status = $_POST['status'];
 
-            // Сохраняем изменения
+            // Save the changes
             category::updateCategoryById($id, $name, $sortOrder, $status);
 
-            // Перенаправляем пользователя на страницу управлениями категориями
+            // Redirect the user to the category management page
             header("Location: /admin/category");
         }
 
-        // Подключаем вид
+        // Include the view
         require_once(ROOT . '/views/admin_category/update.php');
         return true;
     }
 
     /**
-     * Action для страницы "Удалить категорию"
+     * Action for the "Delete Category" page
+     * @param int $id The ID of the category to delete
      */
     public function actionDelete($id)
     {
-        // Проверка доступа
+        // Check admin access
         self::checkAdmin();
 
-        // Обработка формы
+        // Handle form submission (confirmation)
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Удаляем категорию
+            // If the form was submitted
+            // Delete the category
             category::deleteCategoryById($id);
 
-            // Перенаправляем пользователя на страницу управлениями товарами
+            // Redirect the user to the category management page
             header("Location: /admin/category");
         }
 
-        // Подключаем вид
+        // Include the view
         require_once(ROOT . '/views/admin_category/delete.php');
         return true;
     }

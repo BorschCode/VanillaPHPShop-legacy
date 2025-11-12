@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 09.12.2017
  * Time: 20:41
  */
@@ -24,19 +24,19 @@ class userController
             $errors = false;
 
             if (!user::checkName($name)) {
-                $errors[] = 'Имя не должно быть короче 2-х символов';
+                $errors[] = 'Name must be at least 2 characters long';
             }
 
             if (!User::checkEmail($email)) {
-                $errors[] = 'Неправильный email';
+                $errors[] = 'Invalid email';
             }
 
             if (!user::checkPassword($password)) {
-                $errors[] = 'Пароль не должен быть короче 6-ти символов';
+                $errors[] = 'Password must be at least 6 characters long';
             }
 
             if (user::checkEmailExists($email)) {
-                $errors[] = 'Такой email уже используется';
+                $errors[] = 'This email is already in use';
             }
 
             if ($errors == false) {
@@ -44,8 +44,8 @@ class userController
             }
 
         }
-        $pageTitle = "Авторизация";
-        $pageDescription = "Вход в кабинет";
+        $pageTitle = "Authorization";
+        $pageDescription = "Cabinet login";
 
         require_once(ROOT . '/views/user/register.php');
 
@@ -63,12 +63,12 @@ class userController
 
             $errors = false;
 
-            // Валидация полей
+            // Field validation
             if (!user::checkEmail($email)) {
-                $errors[] = 'Неправильный email';
+                $errors[] = 'Invalid email';
             }
             if (!user::checkPassword($password)) {
-                $errors[] = 'Пароль не должен быть короче 6-ти символов';
+                $errors[] = 'Password must be at least 6 characters long';
             }
 
             // Проверяем существует ли пользователь
@@ -76,7 +76,7 @@ class userController
 
             if ($userId == false) {
                 // Если данные неправильные - показываем ошибку
-                $errors[] = 'Неправильные данные для входа на сайт';
+                $errors[] = 'Invalid login credentials';
             } else {
                 // Если данные правильные, запоминаем пользователя (сессия)
                 user::auth($userId);
@@ -86,8 +86,8 @@ class userController
             }
 
         }
-        $pageTitle = "Кабинет пользователя";
-        $pageDescription = "Упралвение покупками и данными";
+        $pageTitle = "User Cabinet";
+        $pageDescription = "Purchase and data management";
 
         require_once(ROOT . '/views/user/login.php');
 
@@ -95,7 +95,7 @@ class userController
     }
 
     /**
-     * Удаляем данные о пользователе из сессии
+     * Remove user data from session
      */
     public function actionLogout()
     {

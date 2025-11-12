@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 10.12.2017
  * Time: 1:25
  */
@@ -17,13 +17,13 @@ class adminProductController extends adminBase
      */
     public function actionIndex()
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем список товаров
         $productsList = product::getProductsList();
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_product/index.php');
         return true;
     }
@@ -33,7 +33,7 @@ class adminProductController extends adminBase
      */
     public function actionCreate()
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем список категорий для выпадающего списка
@@ -125,7 +125,7 @@ class adminProductController extends adminBase
             }
         }
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_product/create.php');
         return true;
     }
@@ -135,7 +135,7 @@ class adminProductController extends adminBase
      */
     public function actionUpdate($id)
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Получаем список категорий для выпадающего списка
@@ -211,17 +211,17 @@ class adminProductController extends adminBase
             // Перенаправляем пользователя на страницу управлениями товарами
             header("Location: /admin/product");
         }
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_product/update.php');
         return true;
     }
 
     /**
-     * Action для страницы "Удалить товар"
+     * Action для страницы "Delete товар"
      */
     public function actionDelete($id)
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
         // Обработка формы
@@ -234,7 +234,7 @@ class adminProductController extends adminBase
             header("Location: /admin/product");
         }
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin_product/delete.php');
         return true;
     }

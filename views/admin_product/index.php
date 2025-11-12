@@ -23,7 +23,7 @@
                 <tr>
                     <th>ID товара</th>
                     <th>Артикул</th>
-                    <th>Название товара</th>
+                    <th>Name товара</th>
                     <th>Цена</th>
                     <th>Новая цена</th>
                     <th>Категория</th>
@@ -39,7 +39,7 @@
                         <td><?php echo $product['price_new']; ?></td>
                         <td><?php echo category::getCategoryText($product['category_id']); ?></td>
                         <td><a href="/admin/product/update/<?php echo $product['id']; ?>" title="Редактировать"><i class="fa fa-pencil-square-o"></i></a></td>
-                        <td><a href="/admin/product/delete/<?php echo $product['id']; ?>" title="Удалить"><i class="fa fa-times"></i></a></td>
+                        <td><a href="/admin/product/delete/<?php echo $product['id']; ?>" title="Delete"><i class="fa fa-times"></i></a></td>
                     </tr>
                 <?php endforeach; ?>
             </table>

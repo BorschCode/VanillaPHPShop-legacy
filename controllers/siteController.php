@@ -18,8 +18,8 @@ class siteController
         /*// Список товаров для слайдера
         $sliderProducts = Product::getRecommendedProducts();*/
 
-        $pageTitle = "Главная";
-        $pageDescription = "Главная страница магазина";
+        $pageTitle = "Home";
+        $pageDescription = "Home страница магазина";
 
 require_once (ROOT.'/views/main/index.php');
         return true;
@@ -38,22 +38,22 @@ require_once (ROOT.'/views/main/index.php');
 
             $errors = false;
 
-            // Валидация полей
+            // Field validation
             if (!user::checkEmail($userEmail)) {
-                $errors[] = 'Неправильный email';
+                $errors[] = 'Invalid email';
             }
 
             if ($errors == false) {
                 $adminEmail = 'admin@test.com';
                 $message = "Текст: {$userText}. От {$userEmail}";
-                $subject = 'Тема письма';
+                $subject = 'Email subject';
                 $result = mail($adminEmail, $subject, $message);
                 $result = true;
             }
 
         }
-        $pageTitle = "Контакты";
-        $pageDescription = "Страница контактов магазина";
+        $pageTitle = "Contacts";
+        $pageDescription = "Store contacts page";
         require_once(ROOT . '/views/main/contact.php');
 
         return true;
@@ -61,24 +61,24 @@ require_once (ROOT.'/views/main/index.php');
 
     public function actionBLog()
     {
-        $pageTitle = "Блог";
-        $pageDescription = "Страница блога";
+        $pageTitle = "Blog";
+        $pageDescription = "Blog page";
         require_once(ROOT . '/views/blog/index.php');
         return true;
     }
 
     public function actionAbout()
     {
-        $pageTitle = "Про нас";
-        $pageDescription = "История успеха";
+        $pageTitle = "About Us";
+        $pageDescription = "Success story";
         require_once(ROOT . '/views/about/index.php');
         return true;
     }
 
 /*    public function actionTest() {
 
-        $pageTitle = "Про нас";
-        $pageDescription = "История успеха";
+        $pageTitle = "About Us";
+        $pageDescription = "Success story";
         require_once(ROOT . '/views/test.php');
         return true;
     }*/

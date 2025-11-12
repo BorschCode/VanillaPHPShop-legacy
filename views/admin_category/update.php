@@ -1,49 +1,52 @@
-<?php include ROOT . '/views/layouts/header_admin.php'; ?>
+<?php
+/**
+ * @var array<string, mixed> $category The associative array containing the category data (e.g., 'id', 'name', 'sort_order', 'status').
+ */
+include ROOT . '/views/layouts/header_admin.php'; ?>
 
-<section>
-    <div class="container">
-        <div class="row">
+    <section>
+        <div class="container">
+            <div class="row">
 
-            <br/>
+                <br/>
 
-            <div class="breadcrumbs">
-                <ol class="breadcrumb">
-                    <li><a href="/admin">Админпанель</a></li>
-                    <li><a href="/admin/category">Управление категориями</a></li>
-                    <li class="active">Редактировать категорию</li>
-                </ol>
-            </div>
+                <div class="breadcrumbs">
+                    <ol class="breadcrumb">
+                        <li><a href="/admin">Admin Panel</a></li>
+                        <li><a href="/admin/category">Manage Categories</a></li>
+                        <li class="active">Edit Category</li>
+                    </ol>
+                </div>
 
 
-            <h4>Редактировать категорию "<?php echo $category['name']; ?>"</h4>
+                <h4>Edit Category "<?php echo $category['name']; ?>"</h4>
 
-            <br/>
+                <br/>
 
-            <div class="col-lg-4">
-                <div class="login-form">
-                    <form action="#" method="post">
+                <div class="col-lg-4">
+                    <div class="login-form">
+                        <form action="#" method="post">
 
-                        <p>Название</p>
-                        <input type="text" name="name" placeholder="" value="<?php echo $category['name']; ?>">
+                            <p>Name</p>
+                            <input type="text" name="name" placeholder="" value="<?php echo $category['name']; ?>">
 
-                        <p>Порядковый номер</p>
-                        <input type="text" name="sort_order" placeholder="" value="<?php echo $category['sort_order']; ?>">
-                        
-                        <p>Статус</p>
-                        <select name="status">
-                            <option value="1" <?php if ($category['status'] == 1) echo ' selected="selected"'; ?>>Отображается</option>
-                            <option value="0" <?php if ($category['status'] == 0) echo ' selected="selected"'; ?>>Скрыта</option>
-                        </select>
+                            <p>Sort Order</p>
+                            <input type="text" name="sort_order" placeholder="" value="<?php echo $category['sort_order']; ?>">
 
-                        <br><br>
-                        
-                        <input type="submit" name="submit" class="btn btn-default" value="Сохранить">
-                    </form>
+                            <p>Status</p>
+                            <select name="status">
+                                <option value="1" <?php if ($category['status'] == 1) echo ' selected="selected"'; ?>>Displayed</option>
+                                <option value="0" <?php if ($category['status'] == 0) echo ' selected="selected"'; ?>>Hidden</option>
+                            </select>
+
+                            <br><br>
+
+                            <input type="submit" name="submit" class="btn btn-default" value="Save">
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 <?php include ROOT . '/views/layouts/footer_admin.php'; ?>
-

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 10.12.2017
  * Time: 1:12
  */
@@ -13,10 +13,10 @@ class adminController extends adminBase
      */
     public function actionIndex()
     {
-        // Проверка доступа
+        // Access check
         self::checkAdmin();
 
-        // Подключаем вид
+        // Connect view
         require_once(ROOT . '/views/admin/index.php');
         return true;
     }

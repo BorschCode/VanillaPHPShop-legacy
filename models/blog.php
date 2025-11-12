@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Жорик
- * Date: 09.12.2017
- * Time: 23:46
- */
-
 class blog
 {
 

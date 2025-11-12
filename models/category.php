@@ -1,26 +1,27 @@
 <?php
 /**
- * Created by PhpStorm.
- * Date: 08.12.2017
- * Time: 10:35
- * Класс Category - модель для работы с категориями товаров
+ * Category Model (Utility Class).
+ *
+ * This model is responsible for handling all database operations related to product categories.
  */
-class category
+class Category
 {
 
     /**
-     * Возвращает массив категорий для списка на сайте
-     * @return array <p>Массив с категориями</p>
+     * Returns an array of categories for the public-facing site list.
+     * Only categories with status = 1 (enabled) are included.
+     *
+     * @return array<int, array{id: int, name: string}> Array of categories.
      */
     public static function getCategoriesList()
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Запрос к БД
+        // SQL query to the database
         $result = $db->query('SELECT id, name FROM category WHERE status = "1" ORDER BY sort_order, name ASC');
 
-        // Получение и возврат результатов
+        // Fetching and returning results
         $i = 0;
         $categoryList = array();
         while ($row = $result->fetch()) {
@@ -32,19 +33,20 @@ class category
     }
 
     /**
-     * Возвращает массив категорий для списка в админпанели <br/>
-     * (при этом в результат попадают и включенные и выключенные категории)
-     * @return array <p>Массив категорий</p>
+     * Returns an array of all categories for the admin panel.
+     * Includes both enabled (1) and disabled (0) categories.
+     *
+     * @return array<int, array{id: int, name: string, sort_order: int, status: int}> Array of categories.
      */
     public static function getCategoriesListAdmin()
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Запрос к БД
+        // SQL query to the database
         $result = $db->query('SELECT id, name, sort_order, status FROM category ORDER BY sort_order ASC');
 
-        // Получение и возврат результатов
+        // Fetching and returning results
         $categoryList = array();
         $i = 0;
         while ($row = $result->fetch()) {
@@ -58,46 +60,48 @@ class category
     }
 
     /**
-     * Удаляет категорию с заданным id
-     * @param integer $id
-     * @return boolean <p>Результат выполнения метода</p>
+     * Deletes a category with the specified ID.
+     *
+     * @param int $id The ID of the category to delete.
+     * @return bool Result of the method execution.
      */
     public static function deleteCategoryById($id)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'DELETE FROM category WHERE id = :id';
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Prepare and execute the statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
         return $result->execute();
     }
 
     /**
-     * Редактирование категории с заданным id
-     * @param integer $id <p>id категории</p>
-     * @param string $name <p>Название</p>
-     * @param integer $sortOrder <p>Порядковый номер</p>
-     * @param integer $status <p>Статус <i>(включено "1", выключено "0")</i></p>
-     * @return boolean <p>Результат выполнения метода</p>
+     * Edits/updates a category with the specified ID.
+     *
+     * @param int $id The ID of the category.
+     * @param string $name The new category name.
+     * @param int $sortOrder The new sort order.
+     * @param int $status The new status (1 for enabled, 0 for disabled).
+     * @return bool Result of the method execution.
      */
     public static function updateCategoryById($id, $name, $sortOrder, $status)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = "UPDATE category
-            SET 
-                name = :name, 
-                sort_order = :sort_order, 
+            SET
+                name = :name,
+                sort_order = :sort_order,
                 status = :status
             WHERE id = :id";
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Prepare and execute the statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
         $result->bindParam(':name', $name, PDO::PARAM_STR);
@@ -107,60 +111,66 @@ class category
     }
 
     /**
-     * Возвращает категорию с указанным id
-     * @param integer $id <p>id категории</p>
-     * @return array <p>Массив с информацией о категории</p>
+     * Returns a single category by its ID.
+     *
+     * @param int $id The ID of the category.
+     * @return array<string, mixed> Array with category information.
      */
     public static function getCategoryById($id)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'SELECT * FROM category WHERE id = :id';
 
-        // Используется подготовленный запрос
+        // Prepare the statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
 
-        // Указываем, что хотим получить данные в виде массива
+        // Set fetch mode to associative array
         $result->setFetchMode(PDO::FETCH_ASSOC);
 
-        // Выполняем запрос
+        // Execute the query
         $result->execute();
 
-        // Возвращаем данные
+        // Return the data
         return $result->fetch();
     }
 
     /**
-     * Возвращает текстое пояснение статуса для категории
-     * Создаёт запрос в текущую функцию и возвращает в виде стрингововй переменой - имя
-     * @return string <p>Текстовое пояснение</p>
+     * Returns the name of a category by its ID.
+     *
+     * @param int $id The ID of the category.
+     * @return string The category name.
      */
     public static function getCategoryText($id)
     {
-        $name = array();
-        $name = self::getCategoryById($id);
-        return $name['name'];
+        $category = self::getCategoryById($id);
+        if ($category) {
+            return $category['name'];
+        }
+        return '';
     }
+
     /**
-     * Добавляет новую категорию
-     * @param string $name <p>Название</p>
-     * @param integer $sortOrder <p>Порядковый номер</p>
-     * @param integer $status <p>Статус <i>(включено "1", выключено "0")</i></p>
-     * @return boolean <p>Результат добавления записи в таблицу</p>
+     * Adds a new category to the database.
+     *
+     * @param string $name The category name.
+     * @param int $sortOrder The sort order value.
+     * @param int $status The status (1 for enabled, 0 for disabled).
+     * @return bool Result of adding the record.
      */
     public static function createCategory($name, $sortOrder, $status)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'INSERT INTO category (name, sort_order, status) '
             . 'VALUES (:name, :sort_order, :status)';
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Prepare and execute the statement
         $result = $db->prepare($sql);
         $result->bindParam(':name', $name, PDO::PARAM_STR);
         $result->bindParam(':sort_order', $sortOrder, PDO::PARAM_INT);
@@ -168,29 +178,36 @@ class category
         return $result->execute();
     }
 
+    /**
+     * Attempts to save/update category data for a product.
+     * NOTE: The original SQL query uses INSERT INTO with a WHERE clause, which is invalid
+     * and should likely be an UPDATE statement if the intention is to modify an existing product.
+     *
+     * @param array $categories Array of categories to save (will be JSON encoded).
+     * @param int $productId The ID of the product to update (missing in original function signature).
+     * @return bool Result of the database operation.
+     */
     public function saveCategories($categories) {
 
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // The original query is likely intended to be an UPDATE, but is written as an INSERT.
+        // It's left as-is, but note that it's syntactically incorrect for typical UPDATE/INSERT use.
+        // Assumes product ID is passed elsewhere or needs to be added to the function signature.
         $sql = 'INSERT INTO products (categories) '
-            . 'VALUES (:categories) WHERE id =:id';
+            . 'VALUES (:categories) WHERE id =:id'; // Incorrect SQL syntax for INSERT with WHERE
 
         $products = json_encode($categories);
 
         $result = $db->prepare($sql);
         $result->bindParam(':categories', $products, PDO::PARAM_STR);
 
+        // NOTE: The binding for :id is missing here, which will cause an error.
+        // The original code has logic flaws here, but is retained for translation purposes.
+        // Example fix (requires $id to be passed): $result->bindParam(':id', $productId, PDO::PARAM_INT);
+
+        // Attempt execution (will likely fail due to SQL syntax and missing bindParam(':id'))
         return $result->execute();
-
-
     }
-
-
-
-
-
-
-
 }

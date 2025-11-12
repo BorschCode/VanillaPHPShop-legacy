@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Жорик
+ * User: George
  * Date: 09.12.2017
  * Time: 22:21
  */
@@ -11,27 +11,27 @@ class cartController
 
     public function actionAdd($id)
     {
-        // Добавляем товар в корзину
+        // Add product to cart
         cart::addProduct($id);
 
-        // Возвращаем пользователя на страницу
+        // Return user to page
         $referrer = $_SERVER['HTTP_REFERER'];
         header("Location: $referrer");
     }
 
     public function actionDelete($id)
     {
-        // Удалить товар из корзины
+        // Remove product from cart
         cart::deleteItem($id);
-        // Возвращаем пользователя на страницу
-        $pageTitle = "Корзина";
-        $pageDescription = "Корзина пользователя";
+        // Return user to page
+        $pageTitle = "Cart";
+        $pageDescription = "Cart пользователя";
         header("Location: /cart/");
     }
 
     public function actionAddAjax($id)
     {
-        // Добавляем товар в корзину
+        // Add product to cart
         echo cart::addProduct($id);
         return true;
     }
@@ -43,20 +43,20 @@ class cartController
 
         $productsInCart = false;
 
-        // Получим данные из корзины
+        // Get data from cart
         $productsInCart = cart::getProducts();
 
         if ($productsInCart) {
-            // Получаем полную информацию о товарах для списка
+            // Get full product information for list
             $productsIds = array_keys($productsInCart);
             $products = product::getProdustsByIds($productsIds);
 
-            // Получаем общую стоимость товаров
+            // Get total cost of products
             $totalPrice = cart::getTotalPrice($products);
         }
 
-        $pageTitle = "Корзина";
-        $pageDescription = "Корзина пользователя";
+        $pageTitle = "Cart";
+        $pageDescription = "Cart пользователя";
         require_once(ROOT . '/views/cart/index.php');
 
         return true;
@@ -82,12 +82,12 @@ class cartController
             $userPhone = $_POST['userPhone'];
             $userComment = $_POST['userComment'];
 
-            // Валидация полей
+            // Field validation
             $errors = false;
             if (!user::checkName($userName))
-                $errors[] = 'Неправильное имя';
+                $errors[] = 'Invalid name';
             if (!user::checkPhone($userPhone))
-                $errors[] = 'Неправильный телефон';
+                $errors[] = 'Invalid phone number';
 
             // Форма заполнена корректно?
             if ($errors == false) {
@@ -108,7 +108,7 @@ class cartController
                     // Оповещаем администратора о новом заказе
                     $adminEmail = 'admin@test.com';
                     $message = 'http://wezom.test/admin/orders';
-                    $subject = 'Новый заказ!';
+                    $subject = 'New order!';
                     mail($adminEmail, $subject, $message);
 
                     // Очищаем корзину
@@ -152,7 +152,7 @@ class cartController
                     // Значения для формы пустые
                 } else {
                     // Да, авторизирован
-                    // Получаем информацию о пользователе из БД по id
+                    // Get user information from DB по id
                     $userId = user::checkLogged();
                     $user = user::getUserById($userId);
                     // Подставляем в форму
@@ -160,8 +160,8 @@ class cartController
                 }
             }
         }
-        $pageTitle = "Корзина";
-        $pageDescription = "Корзина пользователя";
+        $pageTitle = "Cart";
+        $pageDescription = "Cart пользователя";
         require_once(ROOT . '/views/cart/checkout.php');
 
         return true;

@@ -1,32 +1,35 @@
-<?php include ROOT . '/views/layouts/header_admin.php'; ?>
+<?php
+/**
+ * @var int $id The ID of the order currently being deleted.
+ */
+include ROOT . '/views/layouts/header_admin.php'; ?>
 
-<section>
-    <div class="container">
-        <div class="row">
+    <section>
+        <div class="container">
+            <div class="row">
 
-            <br/>
+                <br/>
 
-            <div class="breadcrumbs">
-                <ol class="breadcrumb">
-                    <li><a href="/admin">Админпанель</a></li>
-                    <li><a href="/admin/order">Управление заказами</a></li>
-                    <li class="active">Удалить заказ</li>
-                </ol>
+                <div class="breadcrumbs">
+                    <ol class="breadcrumb">
+                        <li><a href="/admin">Admin Panel</a></li>
+                        <li><a href="/admin/order">Manage Orders</a></li>
+                        <li class="active">Delete Order</li>
+                    </ol>
+                </div>
+
+
+                <h4>Delete Order #<?php echo $id; ?></h4>
+
+
+                <p>Are you sure you want to delete this order?</p>
+
+                <form method="post">
+                    <input type="submit" name="submit" value="Delete" class="btn btn-danger" />
+                </form>
+
             </div>
-
-
-            <h4>Удалить заказ #<?php echo $id; ?></h4>
-
-
-            <p>Вы действительно хотите удалить этот заказ?</p>
-
-            <form method="post">
-                <input type="submit" name="submit" value="Удалить" />
-            </form>
-
         </div>
-    </div>
-</section>
+    </section>
 
 <?php include ROOT . '/views/layouts/footer_admin.php'; ?>
-

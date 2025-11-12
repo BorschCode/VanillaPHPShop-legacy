@@ -15,7 +15,7 @@ include ROOT.'/views/layouts/header.php'?>
             <div class="row">
                 <div class="col-sm-3">
                     <div class="left-sidebar">
-                        <h2>Каталог</h2>
+                        <h2>Catalog</h2>
                         <div class="panel-group category-products">
                             <?php foreach ($categories as $categoryItem): ?>
                                 <div class="panel panel-default">
@@ -46,7 +46,7 @@ include ROOT.'/views/layouts/header.php'?>
                                     <img src="/assets/img/home/new.jpg" class="newarrival" alt="" />
                                     <?php endif; ?>
                                     <h2><?php echo $product['tittle'];?></h2>
-                                    <p>Код товара: <?php echo $product['code'];?></p>
+                                    <p>Product Code: <?php echo $product['code'];?></p>
                                     <span>
                                     <span><?php if ($product['price_new']): ?>
                                             US $<?php echo $product['price_new'];?><br>
@@ -56,7 +56,7 @@ include ROOT.'/views/layouts/header.php'?>
                                         <?php endif; ?></span>
                                     <label>Количество:</label>
                                     <input type="text" value="3" />
-                                    <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>В корзину</a>
+                                    <a href="/cart/add/<?php echo $product['id']; ?>" class="btn btn-default add-to-cart" data-id="<?php echo $product['id']; ?>"><i class="fa fa-shopping-cart"></i>Add to Cart</a>
                                 </span>
                                     <p><b>Наличие:</b> На складе</p>
                                     <p><b>Состояние:</b> <?php if ($product['is_new']): ?>

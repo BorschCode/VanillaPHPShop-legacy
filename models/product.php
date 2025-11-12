@@ -1,41 +1,44 @@
 <?php
-/** * Created by PhpStorm.* Date: 08.12.2017* Time: 11:09*/
 /**
- * Класс Product - модель для работы с товарами
+ * Product Model (Utility Class).
+ *
+ * This model is responsible for handling all database operations related to products.
  */
-class product
+class Product
 {
 
-    // Количество отображаемых товаров по умолчанию
+    /**
+     * Default number of products to show on a page.
+     */
     const SHOW_BY_DEFAULT = 6;
 
     /**
-     * Возвращает массив последних товаров
-     * @param type $count [optional] <p>Количество</p>
-     * @param type $page [optional] <p>Номер текущей страницы</p>
-     * @return array <p>Массив с товарами</p>
+     * Returns an array of the latest products.
+     *
+     * @param int $count [optional] The number of products to return.
+     * @return array<int, array{id: int, tittle: string, price: float, price_new: float, is_new: int}> Array of products.
      */
     public static function getLatestProducts($count = self::SHOW_BY_DEFAULT)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
-        $sql = 'SELECT id, tittle, price,price_new, is_new FROM products '
+        // SQL query text
+        $sql = 'SELECT id, tittle, price, price_new, is_new FROM products '
             . 'WHERE status = "1" ORDER BY id DESC '
             . 'LIMIT :count';
 
-        // Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':count', $count, PDO::PARAM_INT);
 
-        // Указываем, что хотим получить данные в виде массива
+        // Set fetch mode to associative array
         $result->setFetchMode(PDO::FETCH_ASSOC);
 
-        // Выполнение коменды
+        // Execute the command
         $result->execute();
 
-        // Получение и возврат результатов
+        // Fetch and return results
         $i = 0;
         $productsList = array();
         while ($row = $result->fetch()) {
@@ -50,35 +53,36 @@ class product
     }
 
     /**
-     * Возвращает список товаров в указанной категории
-     * @param type $categoryId <p>id категории</p>
-     * @param type $page [optional] <p>Номер страницы</p>
-     * @return type <p>Массив с товарами</p>
+     * Returns a list of products in the specified category, with pagination.
+     *
+     * @param int $categoryId The ID of the category.
+     * @param int $page [optional] The current page number.
+     * @return array<int, array{id: int, tittle: string, price: float, price_new: float, is_new: int}> Array of products.
      */
     public static function getProductsListByCategory($categoryId, $page = 1)
     {
-        $limit = product::SHOW_BY_DEFAULT;
-        // Смещение (для запроса)
+        $limit = self::SHOW_BY_DEFAULT;
+        // Offset (for the query)
         $offset = ($page - 1) * self::SHOW_BY_DEFAULT;
 
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
-        $sql = 'SELECT id, tittle, price,price_new, is_new FROM products '
+        // SQL query text
+        $sql = 'SELECT id, tittle, price, price_new, is_new FROM products '
             . 'WHERE status = 1 AND category_id = :category_id '
             . 'ORDER BY id ASC LIMIT :limit OFFSET :offset';
 
-        // Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
         $result->bindParam(':limit', $limit, PDO::PARAM_INT);
         $result->bindParam(':offset', $offset, PDO::PARAM_INT);
 
-        // Выполнение коменды
+        // Execute the command
         $result->execute();
 
-        // Получение и возврат результатов
+        // Fetch and return results
         $i = 0;
         $products = array();
         while ($row = $result->fetch()) {
@@ -93,79 +97,84 @@ class product
     }
 
     /**
-     * Возвращает продукт с указанным id
-     * @param integer $id <p>id товара</p>
-     * @return array <p>Массив с информацией о товаре</p>
+     * Returns a product with the specified ID.
+     *
+     * @param int $id The ID of the product.
+     * @return array<string, mixed> Array with product information.
      */
     public static function getProductById($id)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'SELECT * FROM products WHERE id = :id';
 
-        // Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
 
-        // Указываем, что хотим получить данные в виде массива
+        // Set fetch mode to associative array
         $result->setFetchMode(PDO::FETCH_ASSOC);
 
-        // Выполнение коменды
+        // Execute the command
         $result->execute();
 
-        // Получение и возврат результатов
+        // Fetch and return results
         return $result->fetch();
     }
 
     /**
-     * Возвращаем количество товаров в указанной категории
-     * @param integer $categoryId
-     * @return integer
+     * Returns the total number of products in the specified category.
+     *
+     * @param int $categoryId The ID of the category.
+     * @return int The total count of products.
      */
     public static function getTotalProductsInCategory($categoryId)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'SELECT count(id) AS count FROM products WHERE status="1" AND category_id = :category_id';
 
-        // Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
 
-        // Выполнение коменды
+        // Execute the command
         $result->execute();
 
-        // Возвращаем значение count - количество
+        // Return the count value
         $row = $result->fetch();
-        return $row['count'];
+        return (int) $row['count'];
     }
 
     /**
-     * Возвращает список товаров с указанными индентификторами
-     * @param array $idsArray <p>Массив с идентификаторами</p>
-     * @return array <p>Массив со списком товаров</p>
+     * Returns a list of products with the specified identifiers (used primarily for cart display).
+     *
+     * @param int[] $idsArray Array with product IDs.
+     * @return array<int, array{id: int, code: string, tittle: string, price: float}> Array with the list of products.
      */
-    public static function getProdustsByIds($idsArray)
+    public static function getProductsByIds($idsArray)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Превращаем массив в строку для формирования условия в запросе
+        // Convert the array to a comma-separated string for the query condition
         $idsString = implode(',', $idsArray);
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = "SELECT * FROM products WHERE status='1' AND id IN ($idsString)";
 
+        // Note: Using query() here is safe since $idsString is guaranteed to be clean integers
+        // from a prior call, but prepare() is generally safer.
         $result = $db->query($sql);
 
-        // Указываем, что хотим получить данные в виде массива
+        // Set fetch mode to associative array
         $result->setFetchMode(PDO::FETCH_ASSOC);
 
-        // Получение и возврат результатов
+        // Fetch and return results
         $i = 0;
         $products = array();
         while ($row = $result->fetch()) {
@@ -179,16 +188,17 @@ class product
     }
 
     /**
-     * Возвращает список рекомендуемых товаров
-     * @return array <p>Массив с товарами</p>
+     * Returns a list of recommended products.
+     *
+     * @return array<int, array{id: int, tittle: string, price: float, price_new: float, is_new: int}> Array of products.
      */
     public static function getRecommendedProducts()
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Получение и возврат результатов
-        $result = $db->query('SELECT id, tittle, price,price_new, is_new FROM products '
+        // Fetch and return results
+        $result = $db->query('SELECT id, tittle, price, price_new, is_new FROM products '
             . 'WHERE status = "1" AND is_recommended = "1" '
             . 'ORDER BY id DESC');
         $i = 0;
@@ -205,16 +215,17 @@ class product
     }
 
     /**
-     * Возвращает список товаров
-     * @return array <p>Массив с товарами</p>
+     * Returns a list of all products (for admin panel).
+     *
+     * @return array<int, array{id: int, tittle: string, price: float, price_new: float, category_id: int, code: string}> Array of products.
      */
     public static function getProductsList()
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Получение и возврат результатов
-        $result = $db->query('SELECT id, tittle, price,price_new,category_id, code FROM products ORDER BY id ASC');
+        // Fetch and return results
+        $result = $db->query('SELECT id, tittle, price, price_new, category_id, code FROM products ORDER BY id ASC');
         $productsList = array();
         $i = 0;
         while ($row = $result->fetch()) {
@@ -230,53 +241,55 @@ class product
     }
 
     /**
-     * Удаляет товар с указанным id
-     * @param integer $id <p>id товара</p>
-     * @return boolean <p>Результат выполнения метода</p>
+     * Deletes a product with the specified ID.
+     *
+     * @param int $id The ID of the product to delete.
+     * @return bool Result of the method execution.
      */
     public static function deleteProductById($id)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = 'DELETE FROM products WHERE id = :id';
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
         return $result->execute();
     }
 
     /**
-     * Редактирует товар с заданным id
-     * @param integer $id <p>id товара</p>
-     * @param array $options <p>Массив с информацей о товаре</p>
-     * @return boolean <p>Результат выполнения метода</p>
+     * Edits/updates a product with the specified ID.
+     *
+     * @param int $id The ID of the product.
+     * @param array<string, mixed> $options Array with product information (fields to update).
+     * @return bool Result of the method execution.
      */
     public static function updateProductById($id, $options)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
         $sql = "UPDATE products
-            SET 
-                tittle = :tittle, 
-                code = :code, 
-                price = :price, 
-                price_new = :price_new, 
-                category_id = :category_id, 
-                brand = :brand, 
-                availability = :availability, 
-                description = :description, 
-                is_new = :is_new, 
-                is_recommended = :is_recommended, 
+            SET
+                tittle = :tittle,
+                code = :code,
+                price = :price,
+                price_new = :price_new,
+                category_id = :category_id,
+                brand = :brand,
+                availability = :availability,
+                description = :description,
+                is_new = :is_new,
+                is_recommended = :is_recommended,
                 status = :status,
-                categories  = :categories 
+                categories  = :categories
             WHERE id = :id";
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':id', $id, PDO::PARAM_INT);
         $result->bindParam(':tittle', $options['tittle'], PDO::PARAM_STR);
@@ -290,34 +303,36 @@ class product
         $result->bindParam(':is_new', $options['is_new'], PDO::PARAM_INT);
         $result->bindParam(':is_recommended', $options['is_recommended'], PDO::PARAM_INT);
         $result->bindParam(':status', $options['status'], PDO::PARAM_INT);
-        $result->bindParam(':categories', $options['categories'], PDO::PARAM_INT);
+        $result->bindParam(':categories', $options['categories'], PDO::PARAM_STR); // Changed type to STR as it likely holds JSON/string data
         return $result->execute();
     }
 
     /**
-     * Добавляет новый товар
-     * @param array $options <p>Массив с информацией о товаре</p>
-     * @return integer <p>id добавленной в таблицу записи</p>
+     * Adds a new product to the database.
+     *
+     * @param array<string, mixed> $options Array with product information.
+     * @return int The ID of the newly inserted record, or 0 on failure.
      */
     public static function createProduct($options)
     {
-        // Соединение с БД
+        // Database connection
         $db = db::getConnection();
 
-        // Текст запроса к БД
+        // SQL query text
+        // NOTE: price_new is commented out in original SQL, so it's removed here too.
         $sql = 'INSERT INTO products '
-            . '(tittle, code, price,category_id, brand, availability,'
+            . '(tittle, code, price, category_id, brand, availability,'
             . 'description, is_new, is_recommended, status)'
             . 'VALUES '
             . '(:tittle, :code, :price, :category_id, :brand, :availability,'
             . ':description, :is_new, :is_recommended, :status)';
 
-        // Получение и возврат результатов. Используется подготовленный запрос
+        // Use a prepared statement
         $result = $db->prepare($sql);
         $result->bindParam(':tittle', $options['tittle'], PDO::PARAM_STR);
         $result->bindParam(':code', $options['code'], PDO::PARAM_STR);
         $result->bindParam(':price', $options['price'], PDO::PARAM_STR);
-        //$result->bindParam(':price_new', $options['price_new'], PDO::PARAM_STR);
+        //$result->bindParam(':price_new', $options['price_new'], PDO::PARAM_STR); // Removed binding to match SQL query
         $result->bindParam(':category_id', $options['category_id'], PDO::PARAM_INT);
         $result->bindParam(':brand', $options['brand'], PDO::PARAM_STR);
         $result->bindParam(':availability', $options['availability'], PDO::PARAM_INT);
@@ -326,110 +341,109 @@ class product
         $result->bindParam(':is_recommended', $options['is_recommended'], PDO::PARAM_INT);
         $result->bindParam(':status', $options['status'], PDO::PARAM_INT);
         if ($result->execute()) {
-            // Если запрос выполенен успешно, возвращаем id добавленной записи
-            return $db->lastInsertId();
+            // If the query is successful, return the ID of the newly added record
+            return (int) $db->lastInsertId();
         }
-        // Иначе возвращаем 0
+        // Otherwise, return 0
         return 0;
     }
 
     /**
-     * Возвращает текстое пояснение наличия товара:<br/>
-     * <i>0 - Под заказ, 1 - В наличии</i>
-     * @param integer $availability <p>Статус</p>
-     * @return string <p>Текстовое пояснение</p>
+     * Returns the textual explanation of product availability:
+     * <i>0 - On order, 1 - In stock</i>
+     *
+     * @param int|string $availability The availability status (0 or 1).
+     * @return string The textual explanation in Ukrainian.
      */
     public static function getAvailabilityText($availability)
     {
         switch ($availability) {
             case '1':
-                return 'В наличии';
+                return 'В наявності'; // In stock (Ukrainian)
                 break;
             case '0':
-                return 'Под заказ';
+                return 'Під замовлення'; // On order (Ukrainian)
+                break;
+            default:
+                return 'Невідомо'; // Unknown (Ukrainian)
                 break;
         }
     }
 
     /**
-     * Возвращает путь к изображению 110x110 px
-     * @param integer $id
-     * @return string <p>Путь к изображению</p>
+     * Returns the path to the 110x110 px image.
+     *
+     * @param int $id The ID of the product.
+     * @return string The path to the image or a placeholder.
      */
     public static function getLowImage($id)
     {
-        // Название изображения-пустышки
+        // Name of the placeholder image
         $noImage = 'no_image_110.jpg';
-        // Путь к папке с товарами
+        // Path to the product folder
         $path = '/upload/images/products/';
-        // Путь к изображению товара
+        // Path to the product image
         $pathToProductImage = $path . $id . '/product_110.jpg';
 
-        if (file_exists($_SERVER['DOCUMENT_ROOT'].$pathToProductImage)) {
-            // Если изображение для товара существует
-            // Возвращаем путь изображения товара
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $pathToProductImage)) {
+            // If the image for the product exists
+            // Return the path to the product image
             return $pathToProductImage;
         }
 
-        // Возвращаем путь изображения-пустышки
+        // Return the path to the placeholder image
         return $path . $noImage;
     }
-    /**
-     * Возвращает путь к изображению 250x250 px
-     * @param integer $id
-     * @return string <p>Путь к изображению</p>
-     */
 
+    /**
+     * Returns the path to the 250x250 px image.
+     *
+     * @param int $id The ID of the product.
+     * @return string The path to the image or a placeholder.
+     */
     public static function getMediumImage($id)
     {
-// Название изображения-пустышки
+        // Name of the placeholder image
         $noImage = 'no_image_250.jpg';
-        // Путь к папке с товарами
+        // Path to the product folder
         $path = '/upload/images/products/';
 
-        // Путь к изображению товара
+        // Path to the product image
         $pathToProductImage = $path . $id . '/product_250.jpg';
 
-        if (file_exists($_SERVER['DOCUMENT_ROOT'].$pathToProductImage)) {
-            // Если изображение для товара существует
-            // Возвращаем путь изображения товара
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $pathToProductImage)) {
+            // If the image for the product exists
+            // Return the path to the product image
             return $pathToProductImage;
         }
 
-        // Возвращаем путь изображения-пустышки
+        // Return the path to the placeholder image
         return $path . $noImage;
     }
 
     /**
-     * Возвращает путь к изображению 450x450 px
-     * @param integer $id
-     * @return string <p>Путь к изображению</p>
+     * Returns the path to the 450x450 px image.
+     *
+     * @param int $id The ID of the product.
+     * @return string The path to the image or a placeholder.
      */
-
     public static function getLargeImage($id)
     {
-// Название изображения-пустышки
+        // Name of the placeholder image
         $noImage = 'no_image_450.jpg';
-        // Путь к папке с товарами
+        // Path to the product folder
         $path = '/upload/images/products/';
 
-        // Путь к изображению товара
+        // Path to the product image
         $pathToProductImage = $path . $id . '/product_450.jpg';
 
-        if (file_exists($_SERVER['DOCUMENT_ROOT'].$pathToProductImage)) {
-            // Если изображение для товара существует
-            // Возвращаем путь изображения товара
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $pathToProductImage)) {
+            // If the image for the product exists
+            // Return the path to the product image
             return $pathToProductImage;
         }
 
-        // Возвращаем путь изображения-пустышки
+        // Return the path to the placeholder image
         return $path . $noImage;
     }
-
-
-
-
-
-
-
 }
