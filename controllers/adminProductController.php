@@ -5,242 +5,234 @@
  * Date: 10.12.2017
  * Time: 1:25
  */
+
+// Include necessary models and base classes
+include_once ROOT . '/function/adminBase.php';
+include_once ROOT . '/models/product.php';
+include_once ROOT . '/models/category.php';
+include_once ROOT . '/function/simpleImage.php'; // Assuming this component exists
+
 /**
- * Контроллер AdminProductController
- * Управление товарами в админпанели
+ * AdminProductController
+ * Manages products in the admin panel
  */
-class adminProductController extends adminBase
+class AdminProductController extends AdminBase
 {
 
     /**
-     * Action для страницы "Управление товарами"
+     * Action for the "Manage Products" page.
+     * @return bool
      */
     public function actionIndex()
     {
-        // Access check
+        // Check admin access
         self::checkAdmin();
 
-        // Получаем список товаров
-        $productsList = product::getProductsList();
+        // Fetch the list of all products
+        $productsList = Product::getProductsList();
 
-        // Connect view
+        // Include the view file
         require_once(ROOT . '/views/admin_product/index.php');
         return true;
     }
 
     /**
-     * Action для страницы "Добавить товар"
+     * Action for the "Add Product" page.
+     * @return bool
      */
     public function actionCreate()
     {
-        // Access check
+        // Check admin access
         self::checkAdmin();
 
-        // Получаем список категорий для выпадающего списка
-        $categoriesList = category::getCategoriesListAdmin();
-        //echo $_POST['tittle'];
-        // Обработка формы
+        // Fetch the list of categories for the dropdown
+        $categoriesList = Category::getCategoriesListAdmin();
+
+        $errors = [];
+        $options = [];
+
+        // Form processing
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Получаем данные из формы
+            // Retrieve data from the form
+            $options['title'] = $_POST['tittle'] ?? ''; // Corrected typo in variable name for consistency
+            $options['code'] = $_POST['code'] ?? '';
+            $options['price'] = $_POST['price'] ?? 0;
+            $options['category_id'] = $_POST['category_id'] ?? 0;
+            $options['brand'] = $_POST['brand'] ?? '';
+            $options['availability'] = $_POST['availability'] ?? 1;
+            $options['description'] = $_POST['description'] ?? '';
+            $options['is_new'] = $_POST['is_new'] ?? 0;
+            $options['is_recommended'] = $_POST['is_recommended'] ?? 0;
+            $options['status'] = $_POST['status'] ?? 1;
 
-            $options['tittle'] = $_POST['tittle'];
-            $options['code'] = $_POST['code'];
-            $options['price'] = $_POST['price'];
-            $options['category_id'] = $_POST['category_id'];
-            $options['brand'] = $_POST['brand'];
-            $options['availability'] = $_POST['availability'];
-            $options['description'] = $_POST['description'];
-            $options['is_new'] = $_POST['is_new'];
-            $options['is_recommended'] = $_POST['is_recommended'];
-            $options['status'] = $_POST['status'];
-
-            // Флаг ошибок в форме
-            $errors = false;
-
-            // При необходимости можно валидировать значения нужным образом
-            if (!isset($options['tittle']) || empty($options['tittle'])) {
-                $errors[] = 'Заполните поля';
+            // Validate values as necessary
+            if (empty($options['title'])) {
+                $errors[] = 'Please fill in the product title.';
             }
 
-            if ($errors == false) {
-                // Если ошибок нет
-                // Добавляем новый товар
-                $id = product::createProduct($options);
+            if (empty($errors)) {
+                // If there are no errors, add the new product
+                $id = Product::createProduct($options);
 
-                // Если запись добавлена
+                // If the record was successfully added
                 if ($id) {
-                    // Проверим, загружалось ли через форму изображение
+                    // Check if an image file was uploaded via the form
                     if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
-                            // Желаемая структура папок
-                            $structure = "./upload/images/products/{$id}";
-                            // Для создания вложенной структуры необходимо указать параметр
-                            if (file_exists($structure)) {
-                                // Если загружалось, переместим его в нужную папке, дадим новое имя
-                                move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "{$structure}/product_450.jpg");
-                            } else {
-                                if (!mkdir($structure, 0777, true))
-                                {
-                                    print_r($structure);
-                                    die('Не удалось создать директории...');
-                                }
-                                else
-                                {
-                                    // Если загружалось, переместим его в нужную папке, дадим новое имя
-                                    move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "{$structure}/product_450.jpg");
-                                }
+
+                        // Desired full path for product image directory
+                        $structure = "/upload/images/products/{$id}";
+                        $fullPath = $_SERVER['DOCUMENT_ROOT'] . $structure;
+
+                        // Create the directory if it doesn't exist (recursive)
+                        if (!is_dir($fullPath)) {
+                            if (!mkdir($fullPath, 0777, true)) {
+                                // Error handling: Failed to create directory
+                                // In a real system, this should be logged, not die()
+                                die("Failed to create directories for product ID {$id}.");
                             }
-                            /*// Желаемая структура папок
-                            $structure = "./upload/images/products/{$id}";
-                            // Для создания вложенной структуры необходимо указать параметр
+                        }
 
-                            if (!mkdir($structure, 0777, true)) {
-                                print_r($structure);
-                                die('Не удалось создать директории...');
-                            }
-                        // Если загружалось, переместим его в нужную папке, дадим новое имя
-                        move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "{$structure}/product_450.jpg");*/
-                        //теперь нужно загружаемую картинку имзенить до размеров 450х450
-                        // файл и новый размер
-                        $fileNamePath = "{$structure}/product_450.jpg";
-                        $image = new SimpleImage();
-                        $image->load($fileNamePath);
-                        $image->resize(450, 450);
-                        $image->save($fileNamePath);
-                        //Делаем изображение размером 250х250
-                        $newFileNamePath = "{$structure}/product_250.jpg";
-                        $image->resize(250, 250);
-                        $image->save($newFileNamePath);
-                        //Делаем изображение размером 110х110
-                        $newFileNamePath = "{$structure}/product_110.jpg";
-                        $image->resize(110, 110);
-                        $image->save($newFileNamePath);
+                        // Define file path after move
+                        $fileNamePath_450 = "{$fullPath}/product_450.jpg";
 
+                        // Move the uploaded file
+                        if (move_uploaded_file($_FILES["image"]["tmp_name"], $fileNamePath_450)) {
+                            // Resize the uploaded image to 450x450
+                            $image = new SimpleImage();
+                            $image->load($fileNamePath_450);
+                            $image->resize(450, 450);
+                            $image->save($fileNamePath_450);
 
+                            // Resize to 250x250
+                            $fileNamePath_250 = "{$fullPath}/product_250.jpg";
+                            $image->resize(250, 250);
+                            $image->save($fileNamePath_250);
+
+                            // Resize to 110x110
+                            $fileNamePath_110 = "{$fullPath}/product_110.jpg";
+                            $image->resize(110, 110);
+                            $image->save($fileNamePath_110);
+                        }
                     }
-                };
+                }
 
-                // Перенаправляем пользователя на страницу управлениями товарами
+                // Redirect user to the product management page
                 header("Location: /admin/product");
+                exit();
             }
         }
 
-        // Connect view
+        // Include the view file
         require_once(ROOT . '/views/admin_product/create.php');
         return true;
     }
 
     /**
-     * Action для страницы "Редактировать товар"
+     * Action for the "Edit Product" page.
+     * @param int $id The product ID to edit.
+     * @return bool
      */
     public function actionUpdate($id)
     {
-        // Access check
+        // Check admin access
         self::checkAdmin();
 
-        // Получаем список категорий для выпадающего списка
-        $categoriesList = category::getCategoriesListAdmin();
+        // Fetch the list of categories for the dropdown
+        $categoriesList = Category::getCategoriesListAdmin();
 
-        // Получаем данные о конкретном заказе
-        $product = product::getProductById($id);
+        // Get data for the specific product
+        $product = Product::getProductById($id);
 
-        // Обработка формы
+        // Form processing
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Получаем данные из формы редактирования. При необходимости можно валидировать значения
-            $options['tittle'] = $_POST['tittle'];
-            $options['code'] = $_POST['code'];
-            $options['price'] = $_POST['price'];
-            $options['price_new'] = $_POST['price_new'];
-            $options['category_id'] = $_POST['category_id'];
-            $options['categories'] = json_encode($_POST['categories']);
-            $options['brand'] = $_POST['brand'];
-            $options['availability'] = $_POST['availability'];
-            $options['description'] = $_POST['description'];
-            $options['is_new'] = $_POST['is_new'];
-            $options['is_recommended'] = $_POST['is_recommended'];
-            $options['status'] = $_POST['status'];
+            // Retrieve data from the edit form. Validate values as necessary
+            $options['title'] = $_POST['tittle'] ?? $product['title'];
+            $options['code'] = $_POST['code'] ?? $product['code'];
+            $options['price'] = $_POST['price'] ?? $product['price'];
+            $options['price_new'] = $_POST['price_new'] ?? $product['price_new'];
+            $options['category_id'] = $_POST['category_id'] ?? $product['category_id'];
+            // Store multiple categories as a JSON string
+            $options['categories'] = json_encode($_POST['categories'] ?? []);
+            $options['brand'] = $_POST['brand'] ?? $product['brand'];
+            $options['availability'] = $_POST['availability'] ?? $product['availability'];
+            $options['description'] = $_POST['description'] ?? $product['description'];
+            $options['is_new'] = $_POST['is_new'] ?? $product['is_new'];
+            $options['is_recommended'] = $_POST['is_recommended'] ?? $product['is_recommended'];
+            $options['status'] = $_POST['status'] ?? $product['status'];
 
-            //print_r($_POST);
+            // Save changes
+            if (Product::updateProductById($id, $options)) {
 
-            // Сохраняем изменения
-            if (product::updateProductById($id, $options)) {
-
-
-                // Если запись сохранена
-                // Проверим, загружалось ли через форму изображение
+                // Check if an image file was uploaded via the form
                 if (is_uploaded_file($_FILES["image"]["tmp_name"]))
                 {
-                    // Желаемая структура папок
-                    $structure = "./upload/images/products/{$id}";
-                    // Для создания вложенной структуры необходимо указать параметр
-                    if (file_exists($structure)) {
-                        // Если загружалось, переместим его в нужную папке, дадим новое имя
-                        move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "{$structure}/product_450.jpg");
+                    // Desired full path for product image directory
+                    $structure = "/upload/images/products/{$id}";
+                    $fullPath = $_SERVER['DOCUMENT_ROOT'] . $structure;
 
-                    } else {
-                        if (!mkdir($structure, 0777, true))
-                        {
-                            print_r($structure);
-                            die('Не удалось создать директории...');
-                        }
-                        else
-                        {
-                            // Если загружалось, переместим его в нужную папке, дадим новое имя
-                            move_uploaded_file($_FILES["image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . "{$structure}/product_450.jpg");
+                    // Create the directory if it doesn't exist (recursive)
+                    if (!is_dir($fullPath)) {
+                        if (!mkdir($fullPath, 0777, true)) {
+                            // Error handling: Failed to create directory
+                            die("Failed to create directories for product ID {$id}.");
                         }
                     }
 
-                    //теперь нужно загружаемую картинку имзенить до размеров 450х450
-                    // файл и новый размер
-                    $fileNamePath = "{$structure}/product_450.jpg";
-                    $image = new SimpleImage();
-                    $image->load($fileNamePath);
-                    $image->resize(450, 450);
-                    $image->save($fileNamePath);
-                    //Делаем изображение размером 250х250
-                    $newFileNamePath = "{$structure}/product_250.jpg";
-                    $image->resize(250, 250);
-                    $image->save($newFileNamePath);
-                    //Делаем изображение размером 110х110
-                    $newFileNamePath = "{$structure}/product_110.jpg";
-                    $image->resize(110, 110);
-                    $image->save($newFileNamePath);
+                    // Define file path after move
+                    $fileNamePath_450 = "{$fullPath}/product_450.jpg";
+
+                    // Move the uploaded file
+                    if (move_uploaded_file($_FILES["image"]["tmp_name"], $fileNamePath_450)) {
+                        // Resize the uploaded image to 450x450
+                        $image = new SimpleImage();
+                        $image->load($fileNamePath_450);
+                        $image->resize(450, 450);
+                        $image->save($fileNamePath_450);
+
+                        // Resize to 250x250
+                        $fileNamePath_250 = "{$fullPath}/product_250.jpg";
+                        $image->resize(250, 250);
+                        $image->save($fileNamePath_250);
+
+                        // Resize to 110x110
+                        $fileNamePath_110 = "{$fullPath}/product_110.jpg";
+                        $image->resize(110, 110);
+                        $image->save($fileNamePath_110);
+                    }
                 }
             }
-            // Перенаправляем пользователя на страницу управлениями товарами
+            // Redirect user to the product management page
             header("Location: /admin/product");
+            exit();
         }
-        // Connect view
+
+        // Include the view file
         require_once(ROOT . '/views/admin_product/update.php');
         return true;
     }
 
     /**
-     * Action для страницы "Delete товар"
+     * Action for the "Delete Product" page.
+     * @param int $id The product ID to delete.
+     * @return bool
      */
     public function actionDelete($id)
     {
-        // Access check
+        // Check admin access
         self::checkAdmin();
 
-        // Обработка формы
+        // Form processing
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Удаляем товар
-            product::deleteProductById($id);
+            // If the form was submitted, delete the product
+            Product::deleteProductById($id);
 
-            // Перенаправляем пользователя на страницу управлениями товарами
+            // Redirect user to the product management page
             header("Location: /admin/product");
+            exit();
         }
 
-        // Connect view
+        // Include the view file (displays confirmation form)
         require_once(ROOT . '/views/admin_product/delete.php');
         return true;
     }
-
-
-
-
-
 }

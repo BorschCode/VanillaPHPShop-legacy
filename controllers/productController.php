@@ -15,11 +15,9 @@ class productController {
         $categories = category::getCategoriesList();
 
         $product = product::getProductById($productId);
-        $product['categories'] = json_decode($product['categories'], true);
-        //print_r($product);
 
-        $pageTitle = "Описание товара ".$product['tittle'];
-        $pageDescription = "Характеристики ".$product['tittle'];
+        $pageTitle = "Product description ".$product['tittle'];
+        $pageDescription = "Specifications ".$product['tittle'];
         require_once(ROOT . '/views/product/view.php');
 
         return true;

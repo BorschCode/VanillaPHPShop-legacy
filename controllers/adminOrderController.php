@@ -6,19 +6,29 @@
  * Time: 1:48
  */
 
-class adminOrderController extends adminBase
+// Include necessary models and base classes
+include_once ROOT . '/function/adminBase.php';
+include_once ROOT . '/function/order.php';
+include_once ROOT . '/models/product.php';
+
+/**
+ * AdminOrderController
+ * Manages orders in the admin panel
+ */
+class adminOrderController extends AdminBase
 {
 
     /**
-     * Action для страницы "Управление заказами"
+     * Action for the "Manage Orders" page.
+     * @return bool
      */
     public function actionIndex()
     {
         // Access check
         self::checkAdmin();
 
-        // Получаем список заказов
-        $ordersList = order::getOrdersList();
+        // Get the list of orders
+        $ordersList = Order::getOrdersList();
 
         // Connect view
         require_once(ROOT . '/views/admin_order/index.php');
@@ -26,31 +36,34 @@ class adminOrderController extends adminBase
     }
 
     /**
-     * Action для страницы "Редактирование заказа"
+     * Action for the "Edit Order" page.
+     * @param int $id The order ID to update.
+     * @return bool
      */
     public function actionUpdate($id)
     {
         // Access check
         self::checkAdmin();
 
-        // Получаем данные о конкретном заказе
-        $order = order::getOrderById($id);
+        // Get data for the specific order
+        $order = Order::getOrderById($id);
 
-        // Обработка формы
+        // Form processing
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Получаем данные из формы
+            // If the form is submitted
+            // Get data from the form
             $userName = $_POST['userName'];
             $userPhone = $_POST['userPhone'];
             $userComment = $_POST['userComment'];
             $date = $_POST['date'];
             $status = $_POST['status'];
 
-            // Сохраняем изменения
-            order::updateOrderById($id, $userName, $userPhone, $userComment, $date, $status);
+            // Save changes
+            Order::updateOrderById($id, $userName, $userPhone, $userComment, $date, $status);
 
-            // Перенаправляем пользователя на страницу управлениями заказами
+            // Redirect user to the order view page
             header("Location: /admin/order/view/$id");
+            exit();
         }
 
         // Connect view
@@ -59,26 +72,26 @@ class adminOrderController extends adminBase
     }
 
     /**
-     * Action для страницы "Просмотр заказа"
+     * Action for the "View Order" page.
+     * @param int $id The order ID to view.
+     * @return bool
      */
     public function actionView($id)
     {
         // Access check
         self::checkAdmin();
 
-        // Получаем данные о конкретном заказе
-        $order = order::getOrderById($id);
+        // Get data for the specific order
+        $order = Order::getOrderById($id);
 
-        // Получаем массив с идентификаторами и количеством товаров
+        // Get an array with product IDs and quantities (stored as JSON)
         $productsQuantity = json_decode($order['products'], true);
 
-        //print_r($productsQuantity);
-
-        // Получаем массив с индентификаторами товаров
+        // Get an array with product IDs
         $productsIds = array_keys($productsQuantity);
 
-        // Получаем список товаров в заказе
-        $products = product::getProdustsByIds($productsIds);
+        // Get the list of products in the order
+        $products = product::getProductsByIds($productsIds);
 
         // Connect view
         require_once(ROOT . '/views/admin_order/view.php');
@@ -86,24 +99,26 @@ class adminOrderController extends adminBase
     }
 
     /**
-     * Action для страницы "Delete заказ"
+     * Action for the "Delete Order" page.
+     * @param int $id The order ID to delete.
+     * @return bool
      */
     public function actionDelete($id)
     {
         // Access check
         self::checkAdmin();
 
-        // Обработка формы
+        // Form processing
         if (isset($_POST['submit'])) {
-            // Если форма отправлена
-            // Удаляем заказ
-            order::deleteOrderById($id);
+            // If the form is submitted, delete the order
+            Order::deleteOrderById($id);
 
-            // Перенаправляем пользователя на страницу управлениями товарами
+            // Redirect user to the order management page
             header("Location: /admin/order");
+            exit();
         }
 
-        // Connect view
+        // Connect view (displays confirmation form)
         require_once(ROOT . '/views/admin_order/delete.php');
         return true;
     }

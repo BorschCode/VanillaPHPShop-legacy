@@ -5,89 +5,98 @@
  * Date: 09.12.2017
  * Time: 20:41
  */
+include_once ROOT . '/models/user.php'; // Ensure the User model is included
 
 class userController
 {
 
+    /**
+     * Handles the user registration process.
+     */
     public function actionRegister()
     {
         $name = '';
         $email = '';
         $password = '';
         $result = false;
+        $errors = []; // Initialize as an empty array for collecting messages
 
         if (isset($_POST['submit'])) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+            // Use null coalescing operator for safe access to POST data
+            $name = $_POST['name'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
 
-            $errors = false;
-
+            // --- Validation Checks ---
             if (!user::checkName($name)) {
-                $errors[] = 'Name must be at least 2 characters long';
+                $errors[] = 'Name must be at least 2 characters long.';
             }
 
             if (!User::checkEmail($email)) {
-                $errors[] = 'Invalid email';
+                $errors[] = 'Invalid email address.';
             }
 
             if (!user::checkPassword($password)) {
-                $errors[] = 'Password must be at least 6 characters long';
+                $errors[] = 'Password must be at least 6 characters long.';
             }
 
             if (user::checkEmailExists($email)) {
-                $errors[] = 'This email is already in use';
+                $errors[] = 'This email is already in use.';
             }
 
-            if ($errors == false) {
+            // If there are no errors, attempt registration
+            if (empty($errors)) {
                 $result = user::register($name, $email, $password);
             }
-
         }
-        $pageTitle = "Authorization";
-        $pageDescription = "Cabinet login";
+
+        $pageTitle = "User Registration";
+        $pageDescription = "Create a new account.";
 
         require_once(ROOT . '/views/user/register.php');
 
         return true;
     }
 
+    /**
+     * Handles the user login process.
+     */
     public function actionLogin()
     {
         $email = '';
         $password = '';
+        $errors = []; // Initialize as an empty array
 
         if (isset($_POST['submit'])) {
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+            // Use null coalescing operator for safe access to POST data
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
 
-            $errors = false;
-
-            // Field validation
+            // --- Validation Checks ---
             if (!user::checkEmail($email)) {
-                $errors[] = 'Invalid email';
+                $errors[] = 'Invalid email address.';
             }
             if (!user::checkPassword($password)) {
-                $errors[] = 'Password must be at least 6 characters long';
+                $errors[] = 'Password must be at least 6 characters long.';
             }
 
-            // Проверяем существует ли пользователь
+            // Check if the user exists and credentials are correct
             $userId = user::checkUserData($email, $password);
 
-            if ($userId == false) {
-                // Если данные неправильные - показываем ошибку
-                $errors[] = 'Invalid login credentials';
+            if ($userId === false) {
+                // If data is incorrect, show an error
+                $errors[] = 'Invalid email or password.';
             } else {
-                // Если данные правильные, запоминаем пользователя (сессия)
+                // If data is correct, log in the user (session)
                 user::auth($userId);
 
-                // Перенаправляем пользователя в закрытую часть - кабинет
+                // Redirect the user to the private area - the cabinet
                 header("Location: /cabinet/");
             }
 
         }
-        $pageTitle = "User Cabinet";
-        $pageDescription = "Purchase and data management";
+        $pageTitle = "User Login";
+        $pageDescription = "Access your account and manage orders.";
 
         require_once(ROOT . '/views/user/login.php');
 
@@ -95,11 +104,13 @@ class userController
     }
 
     /**
-     * Remove user data from session
+     * Removes user data from the session and redirects to the home page.
      */
     public function actionLogout()
     {
+        // Session variables are generally accessed via superglobals, ensure session is started globally
         unset($_SESSION["user"]);
         header("Location: /");
+        exit(); // Always call exit after a header redirect
     }
 }

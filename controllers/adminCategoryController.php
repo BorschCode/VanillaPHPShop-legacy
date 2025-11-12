@@ -3,14 +3,22 @@
  * Created by PhpStorm.
  * Date: 10.12.2017
  * Time: 1:41
- * Controller: AdminCategoryController
+ */
+
+// Include necessary base classes and models
+include_once ROOT . '/function/adminBase.php';
+include_once ROOT . '/models/category.php';
+
+/**
+ * AdminCategoryController
  * Manages product categories in the admin panel
  */
-class adminCategoryController extends adminBase
+class AdminCategoryController extends AdminBase
 {
 
     /**
      * Action for the "Manage Categories" page
+     * @return bool
      */
     public function actionIndex()
     {
@@ -18,7 +26,7 @@ class adminCategoryController extends adminBase
         self::checkAdmin();
 
         // Get a list of categories for the admin panel
-        $categoriesList = category::getCategoriesListAdmin();
+        $categoriesList = Category::getCategoriesListAdmin();
 
         // Include the view
         require_once(ROOT . '/views/admin_category/index.php');
@@ -27,6 +35,7 @@ class adminCategoryController extends adminBase
 
     /**
      * Action for the "Add Category" page
+     * @return bool
      */
     public function actionCreate()
     {
@@ -51,12 +60,12 @@ class adminCategoryController extends adminBase
 
 
             if ($errors == false) {
-                // If there are no errors
-                // Add the new category
-                category::createCategory($name, $sortOrder, $status);
+                // If there are no errors, create the new category
+                Category::createCategory($name, $sortOrder, $status);
 
                 // Redirect the user to the category management page
                 header("Location: /admin/category");
+                exit();
             }
         }
 
@@ -67,6 +76,7 @@ class adminCategoryController extends adminBase
     /**
      * Action for the "Edit Category" page
      * @param int $id The ID of the category to edit
+     * @return bool
      */
     public function actionUpdate($id)
     {
@@ -74,7 +84,7 @@ class adminCategoryController extends adminBase
         self::checkAdmin();
 
         // Get data for the specific category
-        $category = category::getCategoryById($id);
+        $category = Category::getCategoryById($id);
 
         // Handle form submission
         if (isset($_POST['submit'])) {
@@ -85,10 +95,11 @@ class adminCategoryController extends adminBase
             $status = $_POST['status'];
 
             // Save the changes
-            category::updateCategoryById($id, $name, $sortOrder, $status);
+            Category::updateCategoryById($id, $name, $sortOrder, $status);
 
             // Redirect the user to the category management page
             header("Location: /admin/category");
+            exit();
         }
 
         // Include the view
@@ -99,6 +110,7 @@ class adminCategoryController extends adminBase
     /**
      * Action for the "Delete Category" page
      * @param int $id The ID of the category to delete
+     * @return bool
      */
     public function actionDelete($id)
     {
@@ -107,12 +119,12 @@ class adminCategoryController extends adminBase
 
         // Handle form submission (confirmation)
         if (isset($_POST['submit'])) {
-            // If the form was submitted
-            // Delete the category
-            category::deleteCategoryById($id);
+            // If the form was submitted, delete the category
+            Category::deleteCategoryById($id);
 
             // Redirect the user to the category management page
             header("Location: /admin/category");
+            exit();
         }
 
         // Include the view

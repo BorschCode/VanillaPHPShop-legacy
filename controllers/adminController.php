@@ -6,14 +6,22 @@
  * Time: 1:12
  */
 
-class adminController extends adminBase
+// Include necessary base classes
+include_once ROOT . '/function/adminBase.php';
+
+/**
+ * AdminController
+ * Main controller for the Admin Panel start page
+ */
+class AdminController extends AdminBase
 {
     /**
-     * Action для стартовой страницы "Панель администратора"
+     * Action for the main "Administrator Panel" start page.
+     * @return bool
      */
     public function actionIndex()
     {
-        // Access check
+        // Access check: ensures only admin users can access this page
         self::checkAdmin();
 
         // Connect view
